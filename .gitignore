@@ -1,0 +1,19 @@
+# macOS system files
+.DS_Store
+
+# C++ Debug Symbols
+*.dSYM/
+
+# VS Code environment settings
+.vscode/
+
+# Compiled executables (files with no extension on macOS)
+*
+
+# Whitelist
+!*/
+!.gitignore
+!*.cpp
+!*.csv
+!*.h
+!*.hpp
