@@ -53,7 +53,6 @@ int main() {
     std::string truncatedInt = "";
     int digitCount = 0;
     bool pass = false;
-
     for (char c : total) {
         if (c == '.') {
             pass = true;
