@@ -80,7 +80,7 @@ jacobiResult solveJacobi(const std::vector<double>& A,
 
         x = x_next;
         std::cout << k + 1 << ": " << x_next[0] << " & " << x_next[1] << " & " << x_next[2] 
-        /* << " & " << computeResidualNorm(A, b, x_next)% */ << std::endl;
+        << " & " << computeResidualNorm(A, b, x_next)  << std::endl;
     }
     return {x, iterations, false};
 }
