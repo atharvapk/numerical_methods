@@ -8,13 +8,6 @@ Atharva Kharwadkar · October 20, 2026
 
 ---
 
-
-## Test Equation
-
-$$
-x_i^{(k+1)} = \frac{b_i - \sum_{j \neq i} A_{ij}x_j^{(k)}}{A_{ii}}
-$$
-
 ## Introduction and Problem Statement
 
 ### Introduction
@@ -39,7 +32,6 @@ A = \begin{pmatrix}
         3 \\
         4.5
     \end{pmatrix}
-
 $$
 
 **Diagonal Dominance:**
@@ -59,9 +51,7 @@ Thus, matrix A is diagonally dominant. Strict diagonal dominance is the cheapest
 The Jacobi method updates each component independently based on the previous iteration: 
 
 $$
-
 x_i^{(k+1)} = \frac{b_i - \sum_{j \neq i} A_{ij} x_j^{(k)}}{A_{ii}}
-
 $$
 
 To confirm the solver is advancing properly, I can compare the first iteration results of the code to what I had solved during the midterm.
@@ -101,9 +91,7 @@ Based on these console logs, we can see the solver did conform to the expected r
 The Gauss-Seidel method immediately uses updated components as soon as they are computed: 
 
 $$
-
 x_i^{(k+1)} = \frac{1}{A_{ii}}\left(b_i - \sum_{j<i} A_{ij}x_j^{(k+1)} - \sum_{j>i} A_{ij}x_j^{(k)}\right)
-
 $$
 
 Like the Jacobi method, the first Gauss-Seidel iteration was also evaluated by hand, and can be used to verify the implementation.
@@ -148,36 +136,29 @@ Jacobi vs. Gauss-Seidel Empirical Comparison
 These methods converge due to error contraction. Observe the following: 
 
 $$
-
 x^{(k+1)} = Mx^{(k)} + c
-
 $$
 
  And the exact solution: 
 
 $$
-
 x^{*} = Mx^{*} + c
-
 $$
 
  Therefore, the error 
 
 $$
-
 \begin{aligned}
     e^{(k+1)} &= x^{(k+1)} - x^{*} \\
     &= (Mx^{(k)} + c) - (Mx^* + c) \\
     &= M(x^{(k)} - x^*) \\
     &= Me^{(k)}
 \end{aligned}
-
 $$
 
  This also means that every solver iteration applies $M$ once to the current error. 
 
 $$
-
 \begin{aligned}
     e^{(k+1)} &= Me^{(k)} \\
     e^{(1)} &= Me^{(0)}, \;
@@ -186,23 +167,16 @@ $$
     &= M^{2}e^{(0)} \\
     \therefore \; e^{(k)} &= M^{k}e^{(0)}
 \end{aligned}
-
 $$
 
 Now to briefly describe how Spectral Radius is a marker for convergence, $v_i$ denotes an eigenvector of $M$, satisfying $Mv_i = \lambda_iv_i$, and $c_i$ represents its contribution to the initial error. 
 
 $$
-
 e^{(0)} = \sum_{i}^{}c_iv_i
-
 $$
 
- 
-
 $$
-
 e^{(k)} = M^{k}e^{(0)} = \sum_{i}^{}c_i\lambda^{k}_iv_i
-
 $$
 
  Where $\lambda^{k}_i$ terms arise from $M^{k}$. Since the spectral radius is defined as $\rho(M) = \max_i|\lambda_i|$, the condition $\rho(M) < 1$ implies that every eigenvalue has magnitude less than one. Consequently, $\lambda^{k}_i \rightarrow 0$ as $k \rightarrow \infty$, causing the error components to vanish. Thus, $e^{(k)} \rightarrow 0$, meaning that the computed solution converges toward the exact solution $x^{*}$.
@@ -216,9 +190,7 @@ The following section constructs the iteration matrices for Jacobi and Gauss-Sei
 Decomposing $A = D - L - U$ where $D$ is diagonal, $L$ is strictly lower triangular, and $U$ is strictly upper triangular yields: 
 
 $$
-
 M_J = D^{-1}(L+U), \qquad M_{GS} = (D-L)^{-1}U
-
 $$
 
 ### Forward Substitution
@@ -226,9 +198,7 @@ $$
 Because $D-L$ is lower triangular, the system $(D-L)x = \text{rhs}$ is solved via forward substitution: 
 
 $$
-
 x_i = \frac{(\text{rhs})_i - \sum_{k<i} T_{i,k}\,x_k}{T_{i,i}}
-
 $$
 
 ### Power Iteration
@@ -236,41 +206,31 @@ $$
 Power iteration begins with an arbitrary guess vector $v^{(0)}$, chosen here as a vector of ones. At each iteration, the iteration matrix M is applied to the current vector, 
 
 $$
-
 w^{(k)} = M v^{(k)},
-
 $$
 
  Here, $w^{(k)}$ is an intermediate vector between the current and next iterate $v^{(k)}$ & $v^{(k+1)}$. Its Euclidean norm is computed and used to normalize the vector: 
 
 $$
-
 v^{(k+1)} = \frac{w^{(k)}}{||w^{(k)}||_2}.
-
 $$
 
  The multiply-normalize process is repeated until the change between consecutive norm estimates falls below a prescribed tolerance. 
 
 $$
-
 v^{{(0)}} = c_1e_1 + c_2e_2 + c_3e_3
-
 $$
 
  Where each eigenvector satisfies $Me_i = \lambda_ie_i$. One multiplication gives 
 
 $$
-
 Mv^{(0)} = c_1\lambda_1e_1 + c_2\lambda_2e_2 + c_3\lambda_3e_3
-
 $$
 
  And after $k$ iterations, the vector is 
 
 $$
-
 M^kv^{(0)} = c_1\lambda_1^ke_1 + c_2\lambda_2^ke_2 + c_3\lambda_3^ke_3
-
 $$
 
  Because $|\lambda_1| > |\lambda_2| \geq |\lambda_3|$, repeated multiplication by $M$ causes the dominant eigenvector component to “precipitate” out of the original mixture: the other components become negligible relative to it.
@@ -280,34 +240,27 @@ Although repeated multiplication causes the dominant component to gradually "pre
 That all explains why the dominant eigenvector emerges, but the implementation does not explicitly compute $M^kv^{(0)}$. Instead, each iteration stores a normalized vector $v^{(k)}$ and computes 
 
 $$
-
 w^{(k)} = Mv^{(k)}.
-
 $$
 
  Once the dominant component controls the direction of the vector, $Mv^{(k)} \approx \lambda_1 v^{(k)}$. After the first iteration, $v^{(k)}$ has unit Euclidean norm, so, 
 
 $$
-
 \begin{aligned}
     ||w^{(k)}||_2 = ||Mv^{(k)}||_2 \approx ||\lambda_1v^{(k)}||_2 = |\lambda_1| ||v^{(k)}||_2 = 
     |\lambda_1|.
 \end{aligned}
-
 $$
 
  Thus, the norm of the intermediate vector $w^{(k)}$, measured before normalization, estimates the magnitude of the dominant eigenvalue: 
 
 $$
-
 ||w^{(k)}||_2 \rightarrow |\lambda_1| = \rho(M).
-
 $$
 
 Process flow of the power iteration is summarized as follows:
 
 $$
-
 v^{(k)}
 \xrightarrow{\;M\;}
 w^{(k)}
@@ -316,16 +269,13 @@ w^{(k)}
 \|w^{(k)}\|_2 & \text{spectral-radius estimate},\\[3pt]
 \dfrac{w^{(k)}}{\|w^{(k)}\|_2} & =v^{(k+1)}.
 \end{cases}
-
 $$
 
 Convergence is determined by comparing consecutive norm estimates. Once the change between consecutive norm estimates falls below a prescribed tolerance, the iteration stops. This does not necessarily mean that the direction of $v^{(k)}$ has stabilized, it only indicates that the consecutive estimates differ by less than the prescribed tolerance.  
 For $M_J$, this process cleanly converged to 
 
 $$
-
 \rho(M_J) = 0.4
-
 $$
 
 ### Rayleigh Quotient Refinement
@@ -333,35 +283,27 @@ $$
 The Rayleigh Quotient provides an eigenvalue estimate for an approximate eigenvector $v$: 
 
 $$
-
 R(v) = \frac{v^T M v}{v^T v}
-
 $$
 
  For symmetric matrices, the Rayleigh Quotient has strong convergence properties. However, for the non-symmetric iteration matrices $M_J$ and $M_{GS}$, there is no meaningful improvement in convergence rate here. Instead, the benefit of the Rayleigh Quotient is that it reveals the true sign of the dominant eigenvalue of $M_J$. In 4.3, it had been established that power iteration drives v towards the dominant eigenvector. Therefore, 
 
 $$
-
 v \rightarrow e_1 \Rightarrow Mv \rightarrow \lambda_1 v
-
 $$
 
  Such that the Rayleigh Quotient estimates the dominant eigenvalue: 
 
 $$
-
 R(v) = \frac{v^T M v}{v^T v} \rightarrow \frac{v^T (\lambda_1 v)}{v^T v} = \lambda_1
-
 $$
 
 Calculating the Rayleigh Quotient can reuse operations conducted within the Power Iteration loop. In Power Iteration, the matrix-vector product $w = Mv$ is already computed before $w$ is normalized to produce the next iteration of $v$. Therefore, the Rayleigh Quotient can be computed as $R(v) = 
 \frac{v^T w}{v^T v}$, without requiring additional matrix-vector computation. Since $v$ is normalized in the previous iteration, $v^Tv=1$. Importantly, the Rayleigh Quotient must be evaluated using $v$ before it is overwritten by the normalized $w$ as performed in the Power Iteration loop. Otherwise, 
 
 $$
-
 v_{new} = \frac{w}{||w||_2} \hspace{0.2cm} \Longrightarrow  \hspace{0.2cm} v_{\text{new}}^T w  = 
     \frac{w^Tw}{||w||_2} = ||w||_2
-
 $$
 
  Thus, evaluating the Quotient after overwriting $v$ would lose the sign information of the dominant eigenvalue and reproduce the norm estimate used in power iteration.
@@ -377,41 +319,33 @@ Applying the same methods explored in section 4 did not work on $M_{GS}$. The po
 In spectralRadius.cpp, the function computeCgs uses operations manipulating the D, L, and U matrices that represent the decomposition of matrix A into diagonal, lower, and upper triangular matrices respectively. For Gauss-Seidel this produced $M_{GS}$: 
 
 $$
-
 M_{GS} = \begin{pmatrix}
         0 & 0.2 & 0.4\\
         0 & 0.0667 & -0.2\\
         0 & 0.1067 & 0.08
     \end{pmatrix}
-
 $$
 
 To determine if the root cause for the oscillation is really a complex-conjugate dominant eigenvalue pair, it is helpful to directly find the eigenvalues by hand. This means computing $det(M_GS - \lambda I) = 0$:
 
 $$
-
 det \begin{pmatrix}
         -\lambda & 1/5 & 2/5\\
         0 & 1/15 - \lambda & -1/5\\
         0 & 8/75 & 2/25 - \lambda
     \end{pmatrix} = 0
-
 $$
 
 Producing:
 
 $$
-
 -\lambda \left( (1/15 - \lambda)(2/25 - \lambda) - (8/75)(-1/5) \right) = 0
-
 $$
 
 Simplifying the quadratic:
 
 $$
-
 -\lambda \left( \lambda^2 - \frac{11}{75}\lambda + \frac{2}{75} \right) = 0
-
 $$
 
 Thereby, $\lambda_1 = 0$, and $\lambda_{2,3} = \frac{11}{150} \pm  \frac{\sqrt{479}}{150} i$
@@ -423,31 +357,23 @@ However, $|\lambda_{2,3}| = \sqrt{(\frac{11}{150})^2 + (\frac{\sqrt{479}}{150})^
 To compare the theoretical convergence results with numerical implementation, the ratios between consecutive $L_1$ increments were examined near convergence.
 
 $$
-
 \Delta_k = ||x^{(k+1)} - x^{(k)}||_1
-
 $$
 
 $\Delta_k$ denotes the $L_1$ increment at iteration $k$ and $r_k$ defines the ratio between consecutive increments:
 
 $$
-
 r_k = \frac{\Delta_k}{\Delta_{k-1}}
-
 $$
 
 For the Jacobi and Gauss-Seidel models:
 
 $$
-
 r_J = \frac{\Delta_{13}}{\Delta_{12}} = \frac{6.58911e-07}{1.61896e-06} = 0.407, \: \: r_{GS} = \frac{\Delta_{9}}{\Delta_{8}} = \frac{2.06084e-07}{1.07682e-06} = 0.191
-
 $$
 
 $$
-
 \rho(M_{J}) = 0.400, \: \: \rho(M_{GS}) \approx 0.163
-
 $$
 
 While the Jacobi ratio closely matches its spectral radius, the Gauss-Seidel ratio does not show the same agreement. This is consistent with the findings of Section 5, where the iteration does not settle toward a single dominant eigenvector.
