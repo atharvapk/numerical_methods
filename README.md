@@ -58,8 +58,6 @@ To confirm the solver is advancing properly, I can compare the first iteration r
 
 [First iteration of Jacobi as solved during Exam](JacobiMapIteration1.pdf)
 
-*First iteration of Jacobi as solved during Exam*
-
 Matrix A was stored in a 1D array. At 9 elements, there are no benefits in memory usage or process acceleration. However, at scale, this approach could translate to performance gains.
 
 To prevent the solver from iterating infinitely, a tolerance-based stop was implemented. Essentially, the L1 norm is computed between each iteration, decreasing in value gradually. Once that value dips below the tolerance, 1e-6, the solver finishes on that iteration.  
@@ -97,8 +95,6 @@ $$
 Like the Jacobi method, the first Gauss-Seidel iteration was also evaluated by hand, and can be used to verify the implementation.
 
 [First iteration of Gauss-Seidel as solved during Exam](GSMapIteration1.pdf)
-
-*First iteration of Gauss-Seidel as solved during Exam*
 
 The handwritten calculation used an initial guess of $x^{(0)}=(1.01,0.99,1.0)^T$, whereas the numerical comparison uses $x^{(0)}=(1.1,0.9,1.0)^T$. Re-running the Gauss-Seidel solver with the midterm exam’s initial guess reproduced the first iteration, $x^{(1)}=(1.002,0.999333,0.999467)^T$.
 
