@@ -138,16 +138,16 @@ $$
  And the exact solution: 
 
 $$
-x^{*} = Mx^{*} + c
+x^{star} = Mx^{star} + c
 $$
 
  Therefore, the error 
 
 $$
 \begin{aligned}
-    e^{(k+1)} &= x^{(k+1)} - x^{*} \\
-    &= (Mx^{(k)} + c) - (Mx^* + c) \\
-    &= M(x^{(k)} - x^*) \\
+    e^{(k+1)} &= x^{(k+1)} - x^{star} \\
+    &= (Mx^{(k)} + c) - (Mx^{star} + c) \\
+    &= M(x^{(k)} - x^{star}) \\
     &= Me^{(k)}
 \end{aligned}
 $$
