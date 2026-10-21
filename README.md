@@ -138,16 +138,16 @@ $$
  And the exact solution: 
 
 $$
-x^{star} = Mx^{star} + c
+x^{e} = Mx^{e} + c
 $$
 
  Therefore, the error 
 
 $$
 \begin{aligned}
-    e^{(k+1)} &= x^{(k+1)} - x^{star} \\
-    &= (Mx^{(k)} + c) - (Mx^{star} + c) \\
-    &= M(x^{(k)} - x^{star}) \\
+    e^{(k+1)} &= x^{(k+1)} - x^{e} \\
+    &= (Mx^{(k)} + c) - (Mx^{e} + c) \\
+    &= M(x^{(k)} - x^{e}) \\
     &= Me^{(k)}
 \end{aligned}
 $$
@@ -157,11 +157,11 @@ $$
 $$
 \begin{aligned}
     e^{(k+1)} &= Me^{(k)} \\
-    e^{(1)} &= Me^{(0)}, \;
+    e^{(1)} &= Me^{(0)}, \space
     e^{(2)} = Me^{(1)} \\
     &= M(Me^{(0)}) \\
     &= M^{2}e^{(0)} \\
-    \therefore \; e^{(k)} &= M^{k}e^{(0)}
+    \therefore e^{(k)} &= M^{k}e^{(0)}
 \end{aligned}
 $$
 
@@ -256,7 +256,7 @@ $$
 
 Process flow of the power iteration is summarized as follows:
 
-$$
+```math
 v^{(k)}
 \xrightarrow{\;M\;}
 w^{(k)}
@@ -265,7 +265,7 @@ w^{(k)}
 \|w^{(k)}\|_2 & \text{spectral-radius estimate},\\[3pt]
 \dfrac{w^{(k)}}{\|w^{(k)}\|_2} & =v^{(k+1)}.
 \end{cases}
-$$
+```
 
 Convergence is determined by comparing consecutive norm estimates. Once the change between consecutive norm estimates falls below a prescribed tolerance, the iteration stops. This does not necessarily mean that the direction of $v^{(k)}$ has stabilized, it only indicates that the consecutive estimates differ by less than the prescribed tolerance.  
 For $M_J$, this process cleanly converged to 
