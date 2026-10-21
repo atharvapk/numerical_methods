@@ -18,7 +18,7 @@ For the example system, Jacobi converged in 13 iterations and Gauss-Seidel in 9,
 
 ## Full Technical Report
 
-**[Read the report (PDF)](Iterative_Methods_Report.pdf)**
+**[Read the report (PDF)](numerical_methods-writeup.pdf)**
 
 The report contains the mathematical derivations, numerical results, convergence plots, and selected C++ implementations.
 
