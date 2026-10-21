@@ -8,6 +8,13 @@ Atharva Kharwadkar · October 20, 2026
 
 ---
 
+
+## Test Equation
+
+$$
+x_i^{(k+1)} = \frac{b_i - \sum_{j \neq i} A_{ij}x_j^{(k)}}{A_{ii}}
+$$
+
 ## Introduction and Problem Statement
 
 ### Introduction
@@ -21,7 +28,6 @@ During the exam, I solved these problems by hand, iterating only a handful of ti
 We consider the system $Ax = b$, where $A$ and $b$ are: 
 
 $$
-
 A = \begin{pmatrix}
         5 & 1 & 2 \\
         1 & 3 & -1 \\
