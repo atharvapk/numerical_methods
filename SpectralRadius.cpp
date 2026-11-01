@@ -101,7 +101,7 @@ std::vector<double> computeCgs(const DLUResult& dlu, int n) {
     std::vector<double> dl;
     dl.reserve(n*n);
     std::transform(d.begin(), d.end(), l.begin(), 
-    std::back_inserter(dl), std::minus<double>());
+    std::back_inserter(dl), std::plus<double>());
 
     for (int i = 0; i<n; ++i) {
         std::vector<double> rhs(n, 0);
@@ -111,7 +111,7 @@ std::vector<double> computeCgs(const DLUResult& dlu, int n) {
         std::vector<double> m = forwardSub(dl, rhs, n);
 
         for (int j = 0; j<n; ++j) {
-            Cgs[j*n + i] = m[j];
+            Cgs[j*n + i] = -m[j];
         }
     }
     return Cgs;
