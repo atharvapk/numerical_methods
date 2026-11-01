@@ -308,77 +308,71 @@ This case in particular was debugged during an AI-supported review of the script
 = -0.4$, while the norm-based power-iteration estimate produced only the magnitude $|\lambda_1| = 
 \rho(M_J) = 0.4$.
 
-## Confirming the Complex-Eigenvalue Hypothesis
-
-Applying the same methods explored in section 4 did not work on $M_{GS}$. The power iteration did not converge, and the Rayleigh Quotient did not stabilize. Rather than converging to a stable norm estimate, the value continued to oscillate over 100 iterations, remaining approximately between $0.07$ and $0.37$. This led to my hypothesis that $M_{GS}$ has a complex-conjugate dominant eigenvalue pair.
+## Confirming the Spectral Radius
 
 In spectralRadius.cpp, the function computeCgs uses operations manipulating the D, L, and U matrices that represent the decomposition of matrix A into diagonal, lower, and upper triangular matrices respectively. For Gauss-Seidel this produced $M_{GS}$: 
 
 $$
 M_{GS} = \begin{pmatrix}
-        0 & 0.2 & 0.4\\
-        0 & 0.0667 & -0.2\\
-        0 & 0.1067 & 0.08
+        0 & -0.2 & -0.4 \\
+        0 & 0.0667 & 0.4667 \\
+        0 & 0.0533 & -0.0267
     \end{pmatrix}
 $$
 
-To determine if the root cause for the oscillation is really a complex-conjugate dominant eigenvalue pair, it is helpful to directly find the eigenvalues by hand. This means computing $det(M_GS - \lambda I) = 0$:
+To check the solver, the eigenvalues of $M_{GS}$ can be found by hand by solving $\det(M_{GS} - \lambda I) = 0$:
 
 $$
-det \begin{pmatrix}
-        -\lambda & 1/5 & 2/5\\
-        0 & 1/15 - \lambda & -1/5\\
-        0 & 8/75 & 2/25 - \lambda
+\det \begin{pmatrix}
+        -\lambda & -0.2 & -0.4 \\
+        0 & 0.0667 - \lambda & 0.4667 \\
+        0 & 0.0533 & -0.0267 - \lambda
     \end{pmatrix} = 0
 $$
 
-Producing:
+Expanding along the first column gives
 
 $$
--\lambda \left( (1/15 - \lambda)(2/25 - \lambda) - (8/75)(-1/5) \right) = 0
+-\lambda \left( \left(\tfrac{1}{15} - \lambda\right)\left(-\tfrac{2}{75} - \lambda\right)
+    - \tfrac{7}{15}\cdot\tfrac{4}{75} \right) = 0
 $$
 
-Simplifying the quadratic:
+which simplifies to
 
 $$
--\lambda \left( \lambda^2 - \frac{11}{75}\lambda + \frac{2}{75} \right) = 0
+-\lambda \left( \lambda^2 - \frac{1}{25}\lambda - \frac{2}{75} \right) = 0
+    \quad\Longleftrightarrow\quad
+    \lambda\left(75\lambda^2 - 3\lambda - 2\right) = 0
 $$
 
-Thereby, $\lambda_1 = 0$, and $\lambda_{2,3} = \frac{11}{150} \pm  \frac{\sqrt{479}}{150} i$
+Thereby $\lambda_1 = 0$ and
 
-However, $|\lambda_{2,3}| = \sqrt{(\frac{11}{150})^2 + (\frac{\sqrt{479}}{150})^2} = \frac{\sqrt{600}}{150} \approx 0.1633$. Consequently, the assumption of a unique dominant eigenvalue in magnitude, used for power iteration in Section 4.3, does not hold for $M_{GS}$. The two complex-conjugate eigenvalues have equal magnitude, so neither eigenvector component becomes dominant relative to the other through repeated multiplication. As a result, the normalized power iterates do not converge to a single dominant eigenvector, explaining the oscillation observed in the norm estimates. This does not affect convergence of the Gauss-Seidel solver itself, since $\rho(M_{GS})<1$.
+$$
+\lambda_{2,3} = \frac{3 \pm \sqrt{609}}{150} \approx 0.1845,\; -0.1445
+$$
+
+Both are real and $|\lambda_2| \neq |\lambda_3|$, so the dominant eigenvalue is unique:
+
+$$
+\rho(M_{GS}) = \frac{3 + \sqrt{609}}{150} \approx 0.1845
+$$
 
 ## Empirical–Theoretical Cross-Validation
 
-To compare the theoretical convergence results with numerical implementation, the ratios between consecutive $L_1$ increments were examined near convergence.
+Near convergence, the ratio of consecutive $L_1$ increments, $r_k = \Delta_k/\Delta_{k-1}$ with $\Delta_k = \|x^{(k+1)} - x^{(k)}\|_1$, approximates $\rho(M)$:
 
 $$
-\Delta_k = ||x^{(k+1)} - x^{(k)}||_1
+\begin{aligned}
+r_J &= \frac{6.58911\times10^{-7}}{1.61896\times10^{-6}} = 0.407 \approx \rho(M_J) = 0.400 \\
+r_{GS} &= \frac{2.06084\times10^{-7}}{1.07682\times10^{-6}} = 0.191 \approx \rho(M_{GS}) = 0.1845
+\end{aligned}
 $$
-
-$\Delta_k$ denotes the $L_1$ increment at iteration $k$ and $r_k$ defines the ratio between consecutive increments:
-
-$$
-r_k = \frac{\Delta_k}{\Delta_{k-1}}
-$$
-
-For the Jacobi and Gauss-Seidel models:
-
-$$
-r_J = \frac{\Delta_{13}}{\Delta_{12}} = \frac{6.58911e-07}{1.61896e-06} = 0.407, \: \: r_{GS} = \frac{\Delta_{9}}{\Delta_{8}} = \frac{2.06084e-07}{1.07682e-06} = 0.191
-$$
-
-$$
-\rho(M_{J}) = 0.400, \: \: \rho(M_{GS}) \approx 0.163
-$$
-
-While the Jacobi ratio closely matches its spectral radius, the Gauss-Seidel ratio does not show the same agreement. This is consistent with the findings of Section 5, where the iteration does not settle toward a single dominant eigenvector.
 
 ![Convergence plot for Jacobi and Gauss-Seidel](convergence_plot.png)
 
 *Figure 3: Convergence of Jacobi and Gauss-Seidel.*
 
-Figure 3 visually demonstrates the faster convergence of Gauss-Seidel, reaching the prescribed tolerance in 9 iterations compared to 13 iterations for Jacobi. The Power Iteration method in Section 4.3 was implemented ordinarily: the computational method assumed that $M_{GS}$ had a unique dominant eigenvalue, but this was not the case. As such, while both solvers could return the solution to $Ax = b$, I could not theoretically explain why until I computed the spectral radius by hand for the Complex Conjugate Pair in Section 5. The spectral radius for Gauss-Seidel $(\approx 0.163)$ is smaller than Jacobi’s $(0.400)$; therefore, faster convergence is expected.
+Figure 3 shows Gauss-Seidel reaching the tolerance in 9 iterations versus 13 for Jacobi, consistent with $\rho(M_{GS}) < \rho(M_J)$.
 
 ## Broader Relevance: Numerical Linear Algebra
 
